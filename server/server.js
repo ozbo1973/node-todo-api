@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const { ObjectID } = require("mongodb");
 
 const { mongoose } = require("./db");
 const { Todo } = require("./models/todo");
@@ -27,6 +28,21 @@ app.get("/todos", (req, res) => {
     .catch(err => {
       res.status(400).send(err);
     });
+});
+
+app.get("/todos/:todo_id", (req, res) => {
+  let { todo_id } = req.params;
+  if (!ObjectID.isValid(todo_id)) {
+    return res.status(404).send("Not a valid ID");
+  }
+  Todo.findById(todo_id)
+    .then(todo => {
+      if (!todo) {
+        return res.status(404).send("Item not found");
+      }
+      res.status(200).send({ todo });
+    })
+    .catch(err => res.status(400).send(err.message));
 });
 
 app.listen(port, () => {

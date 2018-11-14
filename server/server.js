@@ -55,7 +55,7 @@ app.delete("/todos/:todo_id", (req, res) => {
       if (!todo) {
         return res.status(404).send("No record with that ID found to delete.");
       }
-      res.status(200).send(`${todo.text} has been deleted`);
+      res.status(200).send({ todo, message: `${todo.text} has been deleted` });
     })
 
     .catch(err => res.status(400).send(err.message));

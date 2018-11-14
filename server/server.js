@@ -45,6 +45,22 @@ app.get("/todos/:todo_id", (req, res) => {
     .catch(err => res.status(400).send(err.message));
 });
 
+app.delete("/todos/:todo_id", (req, res) => {
+  let { todo_id } = req.params;
+  if (!ObjectID.isValid(todo_id)) {
+    return res.status(404).send("Not a valid ID");
+  }
+  Todo.findOneAndDelete({ _id: todo_id })
+    .then(todo => {
+      if (!todo) {
+        return res.status(404).send("No record with that ID found to delete.");
+      }
+      res.status(200).send(`${todo.text} has been deleted`);
+    })
+
+    .catch(err => res.status(400).send(err.message));
+});
+
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });

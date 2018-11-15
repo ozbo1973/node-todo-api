@@ -1,4 +1,5 @@
 require("dotenv").config();
+const _ = require("lodash");
 const express = require("express");
 const bodyParser = require("body-parser");
 const { ObjectID } = require("mongodb");
@@ -58,6 +59,31 @@ app.delete("/todos/:todo_id", (req, res) => {
       res.status(200).send({ todo, message: `${todo.text} has been deleted` });
     })
 
+    .catch(err => res.status(400).send(err.message));
+});
+
+app.patch("/todos/:todo_id", (req, res) => {
+  let { todo_id } = req.params;
+  let body = _.pick(req.body, ["text", "completed"]);
+
+  if (!ObjectID.isValid(todo_id)) {
+    return res.status(404).send("Not a valid ID");
+  }
+
+  if (Boolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  Todo.findOneAndUpdate({ _id: todo_id }, body, { new: true })
+    .then(todo => {
+      if (!todo) {
+        return res.status(404).send("Todo not found");
+      }
+      res.status(200).send({ todo });
+    })
     .catch(err => res.status(400).send(err.message));
 });
 

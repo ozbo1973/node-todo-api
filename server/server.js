@@ -87,6 +87,22 @@ app.patch("/todos/:todo_id", (req, res) => {
     .catch(err => res.status(400).send(err.message));
 });
 
+//users routes
+app.post("/users", (req, res) => {
+  let body = _.pick(req.body, ["email", "password"]);
+  newUser = new User(body);
+  newUser
+    .save()
+    .then(() => newUser.generateAuthToken())
+    .then(token =>
+      res
+        .header("x-auth", token)
+        .status(200)
+        .send(newUser)
+    )
+    .catch(err => res.status(400).send(err.message));
+});
+
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });

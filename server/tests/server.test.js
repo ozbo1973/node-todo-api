@@ -182,3 +182,31 @@ describe("PATCH /todos/:todo_id", () => {
       .end(done);
   });
 });
+
+describe("POST /users", () => {
+  it("Should create a new User", done => {
+    let newUser = {
+      email: "jjj@jj.com",
+      password: "abc123"
+    };
+    request(app)
+      .post("/users")
+      .send(newUser)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.email).toBe(newUser.email);
+        expect(res.body.password).toBe(newUser.password);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        User.find({ email: newUser.email })
+          .then(user => {
+            expect(user.length).toBe(1);
+            done();
+          })
+          .catch(err => done(err));
+      });
+  });
+});

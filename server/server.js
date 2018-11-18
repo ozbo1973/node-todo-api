@@ -3,6 +3,7 @@ const _ = require("lodash");
 const express = require("express");
 const bodyParser = require("body-parser");
 const { ObjectID } = require("mongodb");
+const bcrypt = require("bcryptjs");
 
 const { mongoose } = require("./db");
 const { Todo } = require("./models/todo");
@@ -106,6 +107,22 @@ app.post("/users", (req, res) => {
 
 app.get("/users/me", authenticate, (req, res) => {
   res.send(req.user);
+});
+
+app.post("/users/login", (req, res) => {
+  let { email, password } = req.body;
+  User.findByCredentials(email, password)
+    .then(user => {
+      return user.generateAuthToken().then(token => {
+        res
+          .header("x-auth", token)
+          .status(200)
+          .send({ user });
+      });
+    })
+    .catch(err =>
+      res.status(400).send("Login failed, incorrect email and/or password")
+    );
 });
 
 app.listen(port, () => {

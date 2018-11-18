@@ -17,3 +17,4 @@ require("./todos/updateTodoTest");
 require("./users/getUserTest");
 require("./users/postUserTest");
 require("./users/userLoginTest");
+require("./users/userLogoutTest");

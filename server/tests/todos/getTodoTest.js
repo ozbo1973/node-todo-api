@@ -4,15 +4,16 @@ const { ObjectID } = require("mongodb");
 
 const { app } = require("./../../server");
 const { Todo } = require("./../../models/todo");
-const { todos } = require("./../seed");
+const { todos, users } = require("./../seed");
 
 describe("Get /todos", () => {
-  it("Should get all todos", done => {
+  it("Should get all todos of user", done => {
     request(app)
       .get("/todos")
+      .set("x-auth", users[0].tokens[0].token)
       .expect(200)
       .expect(res => {
-        expect(res.body.todos.length).toBe(2);
+        expect(res.body.todos.length).toBe(1);
       })
       .end(done);
   });
@@ -23,6 +24,7 @@ describe("GET /todos/:todo_id", () => {
     var todo_id = todos[0]._id.toHexString();
     request(app)
       .get(`/todos/${todo_id}`)
+      .set("x-auth", users[0].tokens[0].token)
       .expect(200)
       .expect(res => {
         expect(res.body.todo.text).toBe(todos[0].text);
@@ -30,10 +32,20 @@ describe("GET /todos/:todo_id", () => {
       .end(done);
   });
 
-  it("Should return 404 if not found", done => {
+  it("Should return 404 if created by another user", done => {
+    var badID = todos[1]._id;
+    request(app)
+      .get(`/todos/${badID.toHexString()}`)
+      .set("x-auth", users[0].tokens[0].token)
+      .expect(404)
+      .end(done);
+  });
+
+  it("Should return 404 if no ID found", done => {
     var badID = new ObjectID();
     request(app)
       .get(`/todos/${badID.toHexString()}`)
+      .set("x-auth", users[0].tokens[0].token)
       .expect(404)
       .end(done);
   });
@@ -42,6 +54,7 @@ describe("GET /todos/:todo_id", () => {
     var invalidID = "abc123";
     request(app)
       .get(`/todos/${invalidID}`)
+      .set("x-auth", users[0].tokens[0].token)
       .expect(404)
       .end(done);
   });

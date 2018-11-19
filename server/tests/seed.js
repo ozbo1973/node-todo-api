@@ -21,16 +21,34 @@ const users = [
       }
     ]
   },
-  { _id: userTwoID, email: "kkk@k.com", password: "abcUser2" }
+  {
+    _id: userTwoID,
+    email: "kkk@k.com",
+    password: "abcUser2",
+    tokens: [
+      {
+        access: "auth",
+        token: jwt
+          .sign({ _id: userTwoID, access: "auth" }, "abcSecret")
+          .toString()
+      }
+    ]
+  }
 ];
 
 const todos = [
-  { _id: new ObjectID(), text: "First todo" },
+  {
+    _id: new ObjectID(),
+    text: "First todo",
+    _creator: userOneID,
+    completed: false
+  },
   {
     _id: new ObjectID(),
     text: "Second todo",
     completed: true,
-    completedAt: 2356
+    completedAt: 2356,
+    _creator: userTwoID
   }
 ];
 

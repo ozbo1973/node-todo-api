@@ -4,13 +4,14 @@ const { ObjectID } = require("mongodb");
 
 const { app } = require("./../../server");
 const { Todo } = require("./../../models/todo");
-const { todos } = require("./../seed");
+const { todos, users } = require("./../seed");
 
 describe("POST /todos", () => {
   it("Should create a new todo", done => {
     var text = "This is a todo";
     request(app)
       .post("/todos")
+      .set("x-auth", users[0].tokens[0].token)
       .send({ text })
       .expect(200)
       .expect(res => {
@@ -34,6 +35,7 @@ describe("POST /todos", () => {
     var text = "";
     request(app)
       .post("/todos")
+      .set("x-auth", users[0].tokens[0].token)
       .send({ text })
       .expect(400)
       .expect(res => {

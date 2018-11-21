@@ -17,8 +17,8 @@ describe("POST users/login", () => {
       .send({ email, password })
       .expect(200)
       .expect(res => {
-        expect(res.body.user._id).toExist();
-        expect(res.headers["x-auth"]).toExist();
+        expect(res.body.user._id).toBeTruthy();
+        expect(res.headers["x-auth"]).toBeTruthy();
         expect(res.body.user.email).toBe(email);
       })
       .end((err, res) => {
@@ -27,7 +27,7 @@ describe("POST users/login", () => {
         }
         User.findById(res.body.user._id)
           .then(user => {
-            expect(user.tokens[1]).toInclude({
+            expect(user.tokens[1].toObject()).toMatchObject({
               access: "auth",
               token: res.headers["x-auth"]
             });
@@ -44,7 +44,7 @@ describe("POST users/login", () => {
       .expect(400)
       .expect(res => {
         expect(res.body).toEqual({});
-        expect(res.headers["x-auth"]).toNotExist();
+        expect(res.headers["x-auth"]).toBeFalsy();
       })
       .end((err, res) => {
         if (err) {
@@ -65,7 +65,7 @@ describe("POST users/login", () => {
       .expect(400)
       .expect(res => {
         expect(res.body).toEqual({});
-        expect(res.headers["x-auth"]).toNotExist();
+        expect(res.headers["x-auth"]).toBeFalsy();
       })
       .end((err, res) => {
         if (err) {

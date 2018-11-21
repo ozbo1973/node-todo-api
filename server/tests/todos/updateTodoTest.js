@@ -22,7 +22,7 @@ describe("PATCH /todos/:todo_id", () => {
           .then(todo => {
             expect(todo.text).toBe("updated test");
             expect(todo.completed).toBe(true);
-            expect(todo.completedAt).toBeA("number");
+            expect(typeof todo.completedAt).toBe("number");
             done();
           })
           .catch(err => done(err));
@@ -61,7 +61,7 @@ describe("PATCH /todos/:todo_id", () => {
       .expect(res => {
         expect(res.body.todo.text).toBe("updated to false");
         expect(res.body.todo.completed).toBe(false);
-        expect(res.body.todo.completedAt).toNotExist();
+        expect(res.body.todo.completedAt).toBeFalsy();
       })
       .end(done);
   });

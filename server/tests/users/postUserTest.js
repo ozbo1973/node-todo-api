@@ -16,7 +16,7 @@ describe("POST /users", () => {
       .expect(res => {
         expect(res.headers["x-auth"]).toExist();
         expect(res.body.email).toBe(testUser.email);
-        expect(res.body._id).toExist();
+        expect(res.body._id).toBeTruthy();
       })
       .end((err, res) => {
         if (err) {
@@ -25,7 +25,7 @@ describe("POST /users", () => {
         User.find({ email: testUser.email })
           .then(user => {
             expect(user.email).toBe(testUser.email);
-            expect(user.password).toNotBe(testUser.password);
+            expect(user.password).not.toBe(testUser.password);
             done();
           })
           .catch(err => done(err));

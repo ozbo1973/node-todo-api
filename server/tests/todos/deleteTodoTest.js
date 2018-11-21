@@ -22,7 +22,7 @@ describe("DELETE/todos/:todo_id", () => {
         }
         Todo.findById(todo_id)
           .then(res => {
-            expect(res).toNotExist();
+            expect(res).toBeFalsy();
             done();
           })
           .catch(err => done(err));
@@ -44,7 +44,7 @@ describe("DELETE/todos/:todo_id", () => {
         }
         Todo.findById(todo_id)
           .then(res => {
-            expect(res).toExist();
+            expect(res).toBeTruthy();
             done();
           })
           .catch(err => done(err));
